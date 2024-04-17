@@ -1,96 +1,266 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Flash Cards</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-        }
-        #flashCard {
-            min-width: 300px;
-            min-height: 200px;
-            font-size: 10vw; /* Responsive font size */
-            text-align: center;
-            background-color: #fff;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        #counter {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 2vw;
-            color: #888;
-        }
-        #finished {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 2vw;
-            color: #888;
-        }
-        #instructions {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            font-size: 2vw;
-            color: #888;
-        }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+      }
+
+      #flashCard {
+        min-width: 300px;
+        min-height: 200px;
+        font-size: 10vw;
+        /* Responsive font size */
+        text-align: center;
+        background-color: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      #counter {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 2vw;
+        color: #888;
+      }
+
+      #instructions {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        font-size: 2vw;
+        color: #888;
+      }
+
+      #setSelector {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 2vw;
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <div id="flashCard"></div>
     <div id="counter"></div>
-    <div id="finished"></div>
     <div id="instructions">
-        <p>→ Got it</p>
-        <p>← Missed it</p>
-        <p>Enter Speak</p>
-        <p>Escape Reset</p>
+      <p>→ Got it</p>
+      <p>← Missed it</p>
+      <p>Enter Speak</p>
+      <p>Escape Reset</p>
     </div>
+    <select id="setSelector"></select>
 
     <script>
-        const flashcards = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-        let deck = [...flashcards].sort(() => Math.random() - 0.5);
-        let finished = [];
+      let flashcardSets = {
+        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
+        sightWordsOne: [
+          "am",
+          "an",
+          "and",
+          "ask",
+          "at",
+          "but",
+          "can",
+          "did",
+          "from",
+          "get",
+          "had",
+          "I",
+          "if",
+          "in",
+          "is",
+          "it",
+          "just",
+          "not",
+          "on",
+          "stop",
+          "than",
+          "that",
+          "the",
+          "them",
+          "then",
+          "there",
+          "this",
+          "up",
+          "what",
+          "when",
+          "which",
+          "who",
+          "with",
+        ],
+        sightWordsTwo: [
+          "a",
+          "any",
+          "be",
+          "by",
+          "day",
+          "each",
+          "find",
+          "fly",
+          "give",
+          "have",
+          "he",
+          "him",
+          "its",
+          "like",
+          "live",
+          "made",
+          "make",
+          "many",
+          "may",
+          "my",
+          "people",
+          "said",
+          "see",
+          "she",
+          "take",
+          "these",
+          "they",
+          "time",
+          "way",
+          "we",
+          "write",
+        ],
+        sightWordsThree: [
+          "again",
+          "has",
+          "one",
+          "will",
+          "all",
+          "how",
+          "out",
+          "would",
+          "as",
+          "know",
+          "put",
+          "you",
+          "call",
+          "look",
+          "so",
+          "come",
+          "no",
+          "some",
+          "could",
+          "now",
+          "to",
+          "do",
+          "of",
+          "two",
+          "down",
+          "old",
+          "use",
+          "go",
+          "once",
+          "was",
+        ],
+        sightWordsFour: [
+          "think",
+          "going",
+          "long",
+          "thank",
+          "let",
+          "his",
+          "walk",
+          "about",
+          "round",
+          "are",
+          "for",
+          "or",
+          "word",
+          "were",
+          "her",
+          "more",
+          "part",
+          "your",
+          "first",
+          "their",
+          "into",
+          "number",
+          "water",
+          "every",
+          "after",
+          "other",
+          "over",
+          "been",
+          "open",
+        ],
+      };
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowRight') {
-                finished.push(deck.shift());
-            } else if (event.key === 'ArrowLeft') {
-                deck.push(deck.shift());
-            } else if (event.key == "Enter") {
-                // Use the speech api to speak the current flashcard
-                const speech = new SpeechSynthesisUtterance(deck[0].toLocaleLowerCase());
-                speech.lang = 'en-US';
-                speech.rate = 0.8;
-                speech.pitch = 1;
-                window.speechSynthesis.speak(speech);
-            } else if (event.key == 'Escape') {
-                deck = [...flashcards].sort(() => Math.random() - 0.5);
-                finished = [];
-            }
-            render();
+      for (set in flashcardSets) {
+        let option = document.createElement("option");
+        option.value = set;
+        option.innerText = set;
+        document.getElementById("setSelector").appendChild(option);
+      }
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowRight") {
+          finished.push(deck.shift());
+        } else if (event.key === "ArrowLeft") {
+          deck.push(deck.shift());
+        } else if (event.key == "Enter") {
+          // Use the speech api to speak the current flashcard
+          const speech = new SpeechSynthesisUtterance(
+            deck[0].toLocaleLowerCase()
+          );
+          speech.lang = "en-US";
+          speech.rate = 0.8;
+          speech.pitch = 1;
+          window.speechSynthesis.speak(speech);
+        } else if (event.key == "Escape") {
+          resetCards();
+        }
+        render();
+      });
+
+      document
+        .getElementById("setSelector")
+        .addEventListener("change", function (event) {
+          resetCards();
         });
 
-        function render() {
-            if (deck.length === 0) {
-                document.getElementById('flashCard').innerText = 'Done!';
-            } else {
-                document.getElementById('flashCard').innerText = `${deck[0]} ${deck[0].toLowerCase()}`;
-            }
-            document.getElementById('counter').innerText = `${deck.length}`;
-            document.getElementById('finished').innerText = finished.sort().join(' ');
+      function getSet() {
+        set = document.getElementById("setSelector").value;
+        if (!set) {
+          set = "alphabet";
         }
+        return set;
+      }
 
-        render()
+      function resetCards() {
+        let set = getSet();
+        deck = [...flashcardSets[set]].sort(() => Math.random() - 0.5);
+        finished = [];
+        render();
+      }
+
+      function render() {
+        if (deck.length === 0) {
+          document.getElementById("flashCard").innerText = "Done!";
+        } else {
+          if (getSet() == "alphabet") {
+            document.getElementById("flashCard").innerText = `${
+              deck[0]
+            } ${deck[0].toLowerCase()}`;
+          } else {
+            document.getElementById("flashCard").innerText = `${deck[0]}`;
+          }
+        }
+        document.getElementById("counter").innerText = `${deck.length}`;
+      }
+
+      resetCards();
     </script>
-</body>
+  </body>
 </html>
