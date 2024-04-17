@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flash Cards</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #flashCard {
+            min-width: 300px;
+            min-height: 200px;
+            font-size: 10vw; /* Responsive font size */
+            text-align: center;
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        #counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2vw;
+            color: #888;
+        }
+        #finished {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2vw;
+            color: #888;
+        }
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 2vw;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div id="flashCard"></div>
+    <div id="counter"></div>
+    <div id="finished"></div>
+    <div id="instructions">
+        <p>→ Got it</p>
+        <p>← Missed it</p>
+        <p>Enter Reset</p>
+    </div>
+
+    <script>
+        const flashcards = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        let deck = [...flashcards].sort(() => Math.random() - 0.5);
+        let finished = [];
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                finished.push(deck.shift());
+            } else if (event.key === 'ArrowLeft') {
+                deck.push(deck.shift());
+            } else if (event.key == 'Enter') {
+                deck = [...flashcards].sort(() => Math.random() - 0.5);
+                finished = [];
+            }
+            render();
+        });
+
+        function render() {
+            if (deck.length === 0) {
+                document.getElementById('flashCard').innerText = 'Done!';
+            } else {
+                document.getElementById('flashCard').innerText = `${deck[0]} ${deck[0].toLowerCase()}`;
+            }
+            document.getElementById('counter').innerText = `${deck.length}`;
+            document.getElementById('finished').innerText = finished.sort().join(' ');
+        }
+
+        render()
+    </script>
+</body>
+</html>
