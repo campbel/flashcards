@@ -52,7 +52,8 @@
     <div id="instructions">
         <p>→ Got it</p>
         <p>← Missed it</p>
-        <p>Enter Reset</p>
+        <p>Enter Speak</p>
+        <p>Escape Reset</p>
     </div>
 
     <script>
@@ -65,7 +66,14 @@
                 finished.push(deck.shift());
             } else if (event.key === 'ArrowLeft') {
                 deck.push(deck.shift());
-            } else if (event.key == 'Enter') {
+            } else if (event.key == "Enter") {
+                // Use the speech api to speak the current flashcard
+                const speech = new SpeechSynthesisUtterance(deck[0].toLocaleLowerCase());
+                speech.lang = 'en-US';
+                speech.rate = 0.8;
+                speech.pitch = 1;
+                window.speechSynthesis.speak(speech);
+            } else if (event.key == 'Escape') {
                 deck = [...flashcards].sort(() => Math.random() - 0.5);
                 finished = [];
             }
