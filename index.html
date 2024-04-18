@@ -7,17 +7,34 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
         height: 100vh;
+        width: 100%;
         margin: 0;
+        padding: 0;
         background-color: #f0f0f0;
         font-family: Arial, sans-serif;
       }
 
+      .content {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .metadata {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
       #flashCard {
-        min-width: 300px;
-        min-height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* Existing CSS properties */
+        width: 400px;
+        height: 300px;
         font-size: 10vw;
-        /* Responsive font size */
         text-align: center;
         background-color: #fff;
         border-radius: 15px;
@@ -25,20 +42,35 @@
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
       }
 
-      #counter {
-        position: absolute;
-        top: 10px;
-        right: 10px;
+      #leftCount {
         font-size: 2vw;
         color: #888;
       }
 
+      #doneCount {
+        font-size: 2vw;
+        color: green;
+      }
+
       #instructions {
         position: absolute;
-        bottom: 10px;
+        bottom: 0px;
         left: 10px;
         font-size: 2vw;
         color: #888;
+
+        display: grid;
+        grid-template-columns: max-content auto;
+      }
+
+      #instructions dt {
+        grid-column-start: 1;
+        text-align: right;
+      }
+
+      #instructions dd {
+        grid-column-start: 2;
+        font-size: 1.5vw;
       }
 
       #setSelector {
@@ -51,15 +83,22 @@
   </head>
 
   <body>
-    <div id="flashCard"></div>
-    <div id="counter"></div>
-    <div id="instructions">
-      <p>→ Got it</p>
-      <p>← Missed it</p>
-      <p>Enter Speak</p>
-      <p>Escape Reset</p>
-    </div>
     <select id="setSelector"></select>
+
+    <div class="content">
+      <div id="flashCard"></div>
+      <div class="metadata">
+        <div id="leftCount"></div>
+        <div id="doneCount"></div>
+      </div>
+    </div>
+
+    <dl id="instructions">
+      <dt>→</dt><dd>Got it</dd>
+      <dt>←</dt><dd>Missed it</dd>
+      <dt>Enter</dt><dd>Hint</dd>
+      <dt>Esc</dt><dd>Reset</dd>
+    </dl>
 
     <script>
       let flashcardSets = {
@@ -205,21 +244,25 @@
       }
 
       document.addEventListener("keydown", function (event) {
-        if (event.key === "ArrowRight") {
-          finished.push(deck.shift());
-        } else if (event.key === "ArrowLeft") {
-          deck.push(deck.shift());
-        } else if (event.key == "Enter") {
-          // Use the speech api to speak the current flashcard
-          const speech = new SpeechSynthesisUtterance(
-            deck[0].toLocaleLowerCase()
-          );
-          speech.lang = "en-US";
-          speech.rate = 0.8;
-          speech.pitch = 1;
-          window.speechSynthesis.speak(speech);
-        } else if (event.key == "Escape") {
-          resetCards();
+        switch (event.key) {
+          case "ArrowRight":
+            finished.push(deck.shift());
+            break;
+          case "ArrowLeft":
+            deck.push(deck.shift());
+            break;
+          case "Enter":
+            const speech = new SpeechSynthesisUtterance(
+              deck[0].toLocaleLowerCase()
+            );
+            speech.lang = "en-US";
+            speech.rate = 0.8;
+            speech.pitch = 1;
+            window.speechSynthesis.speak(speech);
+            break;
+          case "Escape":
+            resetCards();
+            break;
         }
         render();
       });
@@ -257,7 +300,10 @@
             document.getElementById("flashCard").innerText = `${deck[0]}`;
           }
         }
-        document.getElementById("counter").innerText = `${deck.length}`;
+        document.getElementById("leftCount").innerText = `Left: ${deck.length}`;
+        document.getElementById(
+          "doneCount"
+        ).innerText = `Done: ${finished.length}`;
       }
 
       resetCards();
