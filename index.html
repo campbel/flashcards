@@ -246,11 +246,16 @@
       document.addEventListener("keydown", function (event) {
         switch (event.key) {
           case "ArrowRight":
-            finished.push(deck.shift());
+            if (deck.length > 0) {
+              finished.push(deck.shift());
+            }
             break;
           case "ArrowLeft":
-            deck.push(deck.shift());
+            if (deck.length > 0) {
+              deck.splice(5, 0, deck.shift());
+            }
             break;
+          case "ArrowUp":
           case "Enter":
             const speech = new SpeechSynthesisUtterance(
               deck[0].toLocaleLowerCase()
