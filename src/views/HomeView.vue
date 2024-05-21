@@ -96,7 +96,6 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="instructions">
-        <h2>Instructions</h2>
         <ul>
           <li><strong>→</strong> Got it</li>
           <li><strong>←</strong> Missed it</li>
@@ -139,8 +138,11 @@ h1 {
 }
 
 #flashCard {
-  min-width: 400px;
-  min-height: 300px;
+  height: 300px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 48px;
   text-align: center;
   background-color: var(--color-background-soft);
@@ -157,33 +159,28 @@ h1 {
   color: #888;
 }
 
-#leftCount,
+#deckCount,
 #doneCount {
   margin: 0;
 }
 
 .instructions {
-  margin-top: 40px;
-}
+  margin-top: 20px;
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 10px;
+  }
 
-h2 {
-  font-size: 20px;
-  margin-bottom: 10px;
-}
+  li {
+    margin-bottom: 0;
+  }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-li {
-  margin-bottom: 5px;
-}
-
-li strong {
-  display: inline-block;
-  width: 60px;
-  font-weight: bold;
+  li strong {
+    display: inline-block;
+    width: 40px;
+    font-weight: bold;
+  }
 }
 </style>
