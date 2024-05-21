@@ -22,7 +22,7 @@ const currentCard = computed(() => {
 
 async function fetchFlashcardSets(): Promise<void> {
   try {
-    const response = await axios.get<FlashcardSets>('/src/assets/flashcards.json')
+    const response = await axios.get<FlashcardSets>('flashcards.json')
     flashcardSets.value = response.data
     selectedSet.value = Object.keys(flashcardSets.value)[0]
     resetCards()
