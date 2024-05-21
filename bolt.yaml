@@ -1,2 +1,11 @@
 tools:
-  - nodejs: "20.13.0"
+  - nodejs: '20.13.0'
+
+cmds:
+  build:
+    steps:
+      - sh: npm run build
+  publish:
+    steps:
+      - cmd: build
+      - sh: git subtree push --prefix dist origin gh-pages
