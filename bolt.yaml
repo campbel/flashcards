@@ -8,4 +8,4 @@ cmds:
   publish:
     steps:
       - cmd: build
-      - sh: git subtree push --prefix dist origin gh-pages
+      - sh: npm run publish
