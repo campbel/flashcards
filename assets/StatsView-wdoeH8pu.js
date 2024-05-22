@@ -1,0 +1,1 @@
+import{_ as e,o as t,c,a as s}from"./index-BftUR7Ds.js";const a={},o={class:"stats"},_=s("div",{class:"header"},[s("h1",null,"Stats")],-1),n=[_];function r(d,i){return t(),c("div",o,n)}const f=e(a,[["render",r]]);export{f as default};
