@@ -1,6 +1,8 @@
 <template>
   <div class="stats">
-    <h1>This is a stats page</h1>
+    <div class="header">
+      <h1>Stats</h1>
+    </div>
   </div>
 </template>
 

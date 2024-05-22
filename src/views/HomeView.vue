@@ -2,21 +2,35 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 
+interface Session {
+  id: string
+  start: string
+  end: string
+  deck: string[]
+  finished: string[]
+  missed: string[]
+}
+
 interface FlashcardSets {
   [key: string]: string[]
 }
 
+const currentSession = ref<Session>({
+  id: '',
+  start: '',
+  end: '',
+  deck: [],
+  finished: [],
+  missed: []
+})
 const flashcardSets = ref<FlashcardSets>({})
 const selectedSet = ref('')
-const deck = ref<string[]>([])
-const finished = ref<string[]>([])
 
 const currentCard = computed(() => {
-  if (deck.value.length === 0) {
+  if (currentSession.value.deck.length === 0) {
     return 'Done!'
   } else {
-    const card = deck.value[0]
-    return selectedSet.value === 'alphabet' ? `${card} ${card.toLowerCase()}` : card
+    return currentSession.value.deck[0]
   }
 })
 
@@ -32,27 +46,32 @@ async function fetchFlashcardSets(): Promise<void> {
 }
 
 function resetCards(): void {
-  const set = selectedSet.value
-  console.log(flashcardSets.value[set])
-  deck.value = [...flashcardSets.value[set]].sort(() => Math.random() - 0.5)
-  finished.value = []
+  currentSession.value = {
+    id: Date.now().toString(),
+    start: new Date().toISOString(),
+    end: '',
+    deck: [...flashcardSets.value[selectedSet.value]].sort(() => Math.random() - 0.5),
+    finished: [],
+    missed: []
+  }
 }
 
 function handleKeydown(event: KeyboardEvent): void {
   switch (event.key) {
     case 'ArrowRight':
-      if (deck.value.length > 0) {
-        finished.value.push(deck.value.shift()!)
+      if (currentSession.value.deck.length > 0) {
+        currentSession.value.finished.push(currentSession.value.deck.shift()!)
       }
       break
     case 'ArrowLeft':
-      if (deck.value.length > 0) {
-        deck.value.splice(5, 0, deck.value.shift()!)
+      if (currentSession.value.deck.length > 0) {
+        currentSession.value.missed.push(currentSession.value.deck[0])
+        currentSession.value.deck.splice(5, 0, currentSession.value.deck.shift()!)
       }
       break
     case 'ArrowUp':
     case 'Enter': {
-      const speech = new SpeechSynthesisUtterance(deck.value[0].toLocaleLowerCase())
+      const speech = new SpeechSynthesisUtterance(currentSession.value.deck[0].toLocaleLowerCase())
       speech.lang = 'en-US'
       speech.rate = 0.8
       speech.pitch = 1
@@ -76,54 +95,41 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main>
-    <div id="app">
-      <div class="header">
-        <h1>Flashcard App</h1>
-        <select v-model="selectedSet" @change="resetCards" class="set-selector">
-          <option v-for="(set, index) in flashcardSets" :key="index" :value="index">
-            {{ index }}
-          </option>
-        </select>
-      </div>
+  <div class="home">
+    <div class="header">
+      <h1>Flashcard</h1>
+      <select v-model="selectedSet" @change="resetCards" class="set-selector">
+        <option v-for="(set, index) in flashcardSets" :key="index" :value="index">
+          {{ index }}
+        </option>
+      </select>
+    </div>
 
-      <div class="content">
-        <div id="flashCard">{{ currentCard }}</div>
-        <div class="metadata">
-          <div id="leftCount">Left: {{ deck.length }}</div>
-          <div id="doneCount">Done: {{ finished.length }}</div>
-        </div>
-      </div>
-
-      <div class="instructions">
-        <ul>
-          <li><strong>→</strong> Got it</li>
-          <li><strong>←</strong> Missed it</li>
-          <li><strong>Enter</strong> Hint</li>
-          <li><strong>Esc</strong> Reset</li>
-        </ul>
+    <div class="content">
+      <div id="flashCard">{{ currentCard }}</div>
+      <div class="metadata">
+        <div id="leftCount">Left: {{ currentSession.deck.length }}</div>
+        <div id="doneCount">Done: {{ currentSession.finished.length }}</div>
       </div>
     </div>
-  </main>
+
+    <div class="instructions">
+      <ul>
+        <li><strong>→</strong> Got it</li>
+        <li><strong>←</strong> Missed it</li>
+        <li><strong>Enter</strong> Hint</li>
+        <li><strong>Esc</strong> Reset</li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-#app {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-}
-
-h1 {
-  font-size: 24px;
-  margin: 0;
 }
 
 .set-selector {

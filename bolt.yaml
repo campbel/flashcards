@@ -2,6 +2,10 @@ tools:
   - nodejs: '20.13.0'
 
 cmds:
+  serve:
+    aliases: [s, dev]
+    steps:
+      - sh: npm run dev
   build:
     steps:
       - sh: npm run build
